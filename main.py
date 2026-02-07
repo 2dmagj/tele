@@ -1,104 +1,174 @@
-import os
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, ContextTypes, filters
-import yt_dlp
-from flask import Flask, request
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>Play AI Store</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-BOT_TOKEN = os.environ.get("TOKEN")
-APP_URL = os.environ.get("APP_URL")  # رابط Railway الكامل
-
-app = Flask(__name__)
-user_data = {}
-
-def get_video_formats(url):
-    ydl_opts = {'quiet': True, 'no_warnings': True}
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(url, download=False)
-    formats = info.get('formats', [])
-    filtered_formats = [
-        f for f in formats
-        if f.get('ext') in ('mp4', 'webm') and f.get('acodec') != 'none' and f.get('vcodec') != 'none'
-    ]
-    filtered_formats.sort(key=lambda x: x.get('height', 0), reverse=True)
-    return filtered_formats
-
-def download_video(url, format_id):
-    ydl_opts = {
-        'format': format_id,
-        'outtmpl': 'downloads/%(title)s.%(ext)s',
-        'quiet': True,
-        'no_warnings': True,
-        'noplaylist': True
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
     }
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(url, download=True)
-        filename = ydl.prepare_filename(info)
-    return filename
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("👋 مرحباً! أرسل رابط فيديو، واختر الجودة.")
+    header {
+      background: #111;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    url = update.message.text
-    await update.message.reply_text("🔍 جاري جلب خيارات الجودة...")
-    try:
-        formats = get_video_formats(url)
-        if not formats:
-            await update.message.reply_text("❌ لا توجد جودات مناسبة (mp4 أو webm).")
-            return
-        buttons = []
-        for f in formats[:8]:
-            label = f"{f.get('height', '?')}p - {f.get('ext')}"
-            buttons.append([InlineKeyboardButton(label, callback_data=f['format_id'])])
-        markup = InlineKeyboardMarkup(buttons)
-        user_data[update.message.from_user.id] = url
-        await update.message.reply_text("✅ اختر الجودة:", reply_markup=markup)
-    except Exception as e:
-        await update.message.reply_text(f"❗ حدث خطأ: {e}")
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background: #222;
+      padding: 10px;
+    }
 
-async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-    user_id = query.from_user.id
-    format_id = query.data
-    url = user_data.get(user_id)
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
 
-    if not url:
-        await query.edit_message_text("❗ أرسل رابط أولاً.")
-        return
+    nav a:hover {
+      color: #00e0ff;
+    }
 
-    await query.edit_message_text("📥 جاري تحميل الفيديو...")
-    try:
-        filename = download_video(url, format_id)
-        with open(filename, 'rb') as video:
-            await query.message.reply_video(video)
-        os.remove(filename)
-        user_data.pop(user_id, None)
-    except Exception as e:
-        await query.message.reply_text(f"⚠️ خطأ أثناء التحميل: {e}")
+    .container {
+      padding: 20px;
+    }
 
-# Flask endpoint for Webhook
-@app.route(f'/{BOT_TOKEN}', methods=['POST'])
-def telegram_webhook():
-    from telegram import Update
-    from telegram.ext import Application
+    .hero {
+      background: linear-gradient(to left, #000, #333);
+      color: white;
+      padding: 40px;
+      border-radius: 10px;
+      text-align: center;
+    }
 
-    update = Update.de_json(request.get_json(force=True), bot.application.bot)
-    bot.application.update_queue.put(update)
-    return 'ok'
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 30px;
+    }
 
-# Start bot via Webhook
-async def start_bot():
-    app_obj = Application.builder().token(BOT_TOKEN).build()
-    app_obj.add_handler(CommandHandler("start", start))
-    app_obj.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    app_obj.add_handler(CallbackQueryHandler(button_callback))
-    global bot
-    bot = app_obj
-    await app_obj.bot.set_webhook(url=f"{APP_URL}/{BOT_TOKEN}")
-    await app_obj.start()
+    .product {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
 
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(start_bot())
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    .product button {
+      margin-top: 10px;
+      padding: 8px 15px;
+      border: none;
+      background: #00bcd4;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .support {
+      margin-top: 40px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    footer {
+      margin-top: 40px;
+      background: #111;
+      color: white;
+      text-align: center;
+      padding: 15px;
+    }
+
+    .whatsapp {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #25D366;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Play AI Store</h1>
+  <p>منصة منتجات رقمية وخدمة عملاء ذكية</p>
+</header>
+
+<nav>
+  <a href="#">الرئيسية</a>
+  <a href="#products">المنتجات</a>
+  <a href="#support">خدمة العملاء</a>
+</nav>
+
+<div class="container">
+
+  <div class="hero">
+    <h2>أهلاً بك 👋</h2>
+    <p>أفضل المنتجات الرقمية + دعم سريع عبر Play AI</p>
+  </div>
+
+  <section id="products">
+    <h2>🛒 المنتجات</h2>
+
+    <div class="products">
+      <div class="product">
+        <h3>اشتراك Play AI</h3>
+        <p>دعم ذكي 24/7</p>
+        <button onclick="alert('تم الطلب بنجاح')">شراء</button>
+      </div>
+
+      <div class="product">
+        <h3>تصميم موقع</h3>
+        <p>موقع احترافي سريع</p>
+        <button>شراء</button>
+      </div>
+
+      <div class="product">
+        <h3>بوت خدمة عملاء</h3>
+        <p>رد تلقائي ذكي</p>
+        <button>شراء</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="support" class="support">
+    <h2>🎧 خدمة العملاء</h2>
+    <p>تواصل معنا في أي وقت، فريق Play AI جاهز لخدمتك</p>
+    <button onclick="openChat()">بدء محادثة</button>
+    <p id="chatBox"></p>
+  </section>
+
+</div>
+
+<footer>
+  © 2026 Play AI - جميع الحقوق محفوظة
+</footer>
+
+<a class="whatsapp" href="https://wa.me/97300000000" target="_blank">
+  واتساب 💬
+</a>
+
+<script>
+  function openChat() {
+    document.getElementById("chatBox").innerHTML =
+      "🤖 مرحباً! أنا Play AI، كيف أقدر أساعدك؟";
+  }
+</script>
+
+</body>
+</html>
