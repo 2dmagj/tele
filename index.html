@@ -3,252 +3,1043 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر بيننس - إدارة المنتجات</title>
+    <title>متجر بيننس - أفضل متجر رقمي بـ Litecoin</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #00FF88; --secondary: #FF006E; --accent: #00D9FF;
-            --dark-bg: #0a0e27; --dark-card: #1a1f3a; --dark-border: rgba(255, 255, 255, 0.1);
-            --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.7);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        :root {
+            --primary: #00FF88;
+            --secondary: #FF006E;
+            --accent: #00D9FF;
+            --dark-bg: #0a0e27;
+            --dark-card: #1a1f3a;
+            --dark-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --gold: #FFD700;
+            --purple: #9D4EDD;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Cairo', sans-serif;
             background: linear-gradient(135deg, var(--dark-bg) 0%, #0f1535 100%);
             color: var(--text-primary);
             overflow-x: hidden;
-            scroll-behavior: smooth;
         }
+
+        /* ===== NAVIGATION ===== */
         nav {
-            position: fixed; top: 0; width: 100%; z-index: 1000;
-            backdrop-filter: blur(10px); background: rgba(10, 14, 39, 0.95);
-            border-bottom: 1px solid var(--dark-border); padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(10, 14, 39, 0.95);
+            border-bottom: 1px solid var(--dark-border);
+            padding: 1rem 2rem;
+            box-shadow: 0 8px 32px rgba(0, 255, 136, 0.1);
         }
-        .container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 1.8rem; font-weight: 900; background: linear-gradient(135deg, var(--accent), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        nav ul { display: flex; list-style: none; gap: 1.5rem; align-items: center; }
-        nav a { color: var(--text-secondary); text-decoration: none; transition: 0.3s; font-size: 0.9rem; }
-        .btn { padding: 0.6rem 1.2rem; border: none; border-radius: 0.6rem; cursor: pointer; font-family: 'Cairo'; font-weight: 600; transition: 0.3s; display: inline-flex; align-items: center; gap: 0.5rem; }
-        .btn-primary { background: var(--primary); color: var(--dark-bg); }
-        .btn-secondary { background: transparent; border: 1px solid var(--dark-border); color: #fff; }
-        .btn-danger { background: var(--secondary); color: #fff; }
-        .hero { margin-top: 120px; text-align: center; padding: 2rem; }
-        .products { padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
-        .product-card { background: var(--dark-card); border: 1px solid var(--dark-border); border-radius: 1rem; padding: 1.5rem; transition: 0.3s; position: relative; }
-        .product-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .product-image { width: 100%; height: 180px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 1rem; }
-        .admin-controls { display: flex; gap: 0.5rem; margin-top: 1rem; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal.active { display: flex; }
-        .modal-content { background: var(--dark-card); padding: 2rem; border-radius: 1rem; width: 90%; max-width: 500px; border: 1px solid var(--dark-border); }
-        .form-group { margin-bottom: 1rem; }
-        label { display: block; margin-bottom: 0.4rem; color: var(--text-secondary); font-size: 0.9rem; }
-        input, textarea { width: 100%; padding: 0.7rem; background: rgba(255,255,255,0.05); border: 1px solid var(--dark-border); border-radius: 0.5rem; color: #fff; font-family: 'Cairo'; }
-        .admin-panel { display: none; padding: 2rem; max-width: 1200px; margin: 0 auto; background: rgba(255,255,255,0.02); border-radius: 1rem; margin-top: 2rem; }
-        .admin-panel.active { display: block; }
-        .success-message { position: fixed; top: 20px; right: 20px; background: var(--primary); color: #000; padding: 1rem; border-radius: 0.5rem; display: none; z-index: 3000; }
+
+        nav .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent), var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 5px rgba(0, 255, 136, 0.3)); }
+            50% { filter: drop-shadow(0 0 15px rgba(0, 255, 136, 0.6)); }
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 0.7rem 1.8rem;
+            border: none;
+            border-radius: 0.6rem;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #00cc6f);
+            color: var(--dark-bg);
+            border: none;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--dark-border);
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 217, 255, 0.1);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.15) 0%, transparent 70%);
+            animation: float 25s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(157, 78, 221, 0.1) 0%, transparent 70%);
+            animation: float-reverse 30s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        @keyframes float-reverse {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-30px, 30px); }
+        }
+
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            background: rgba(0, 217, 255, 0.15);
+            border: 1px solid var(--accent);
+            border-radius: 2rem;
+            color: var(--accent);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            margin: 1.5rem 0;
+            background: linear-gradient(135deg, var(--accent), var(--primary), var(--secondary), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin: 1.5rem 0;
+            line-height: 1.8;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* ===== FEATURES SECTION ===== */
+        .features-showcase {
+            max-width: 1400px;
+            margin: 5rem auto;
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--dark-border);
+            border-radius: 1.2rem;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s;
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            background: rgba(0, 255, 136, 0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: rotate 3s linear infinite;
+        }
+
+        .feature-card:hover .feature-icon {
+            animation: rotate 1s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        /* ===== PRODUCTS SECTION ===== */
+        .products {
+            max-width: 1400px;
+            margin: 5rem auto;
+            padding: 2rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--dark-border);
+            border-radius: 1.2rem;
+            padding: 1.8rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s;
+        }
+
+        .product-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .product-card:hover {
+            border-color: var(--primary);
+            background: rgba(0, 255, 136, 0.12);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0, 255, 136, 0.25);
+        }
+
+        .product-card h3 {
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .product-price {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 900;
+            margin: 1.2rem 0;
+        }
+
+        .product-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed var(--dark-border);
+            border-radius: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== NOTIFICATIONS ===== */
+        .live-notifications {
+            position: fixed;
+            top: 100px;
+            left: 2rem;
+            z-index: 500;
+            max-width: 350px;
+        }
+
+        .notification {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 0.8rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            animation: slideInLeft 0.4s ease-out;
+            font-size: 0.9rem;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ===== WHATSAPP BUTTON ===== */
+        .whatsapp-btn {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), #00cc6f);
+            border: none;
+            border-radius: 50%;
+            color: var(--dark-bg);
+            font-size: 1.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+            z-index: 999;
+            text-decoration: none;
+            animation: float-up 3s ease-in-out infinite;
+        }
+
+        @keyframes float-up {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+
+live
+
+Jump to live
+complete-store.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binance Premium Store - Digital Products</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #2d1b69 50%, #0f172a 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.3);
+        }
+
+        .neon-text {
+            background: linear-gradient(90deg, #06b6d4, #22c55e, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .product-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(45, 27, 105, 0.95));
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #06b6d4, #22c55e);
+            color: #0f172a;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        input, textarea {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            margin-bottom: 12px;
+            font-family: inherit;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 28px;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .chatbot-btn {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+        }
+
+        .whatsapp-btn {
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+            bottom: 100px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                padding: 20px;
+            }
+            .floating-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+                bottom: 20px;
+                right: 20px;
+            }
+            .whatsapp-btn {
+                bottom: 80px;
+            }
+        }
     </style>
 </head>
 <body>
-    <nav>
-        <div class="container">
-            <div class="logo">💎 بيننس بريميوم</div>
-            <ul>
-                <li><a href="#home">الرئيسية</a></li>
-                <li id="adminLink" style="display:none;"><a href="javascript:void(0)" onclick="toggleAdminPanel()">لوحة التحكم</a></li>
-                <li class="auth-buttons">
-                    <button class="btn btn-primary" id="loginBtn" onclick="openModal('loginModal')">دخول المسؤول</button>
-                    <button class="btn btn-secondary" id="logoutBtn" style="display:none;" onclick="handleLogout()">خروج</button>
-                </li>
-            </ul>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glassmorphism border-b border-cyan-400/20">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold neon-text">💎 BINANCE PREMIUM</div>
+            <div class="flex gap-4">
+                <button onclick="goToAdmin()" class="px-4 py-2 rounded-lg bg-cyan-400/20 border border-cyan-400/50 text-cyan-400 hover:bg-cyan-400/30 transition font-semibold">
+                    Admin Panel
+                </button>
+                <button onclick="scrollToProducts()" class="px-4 py-2 rounded-lg bg-green-400/20 border border-green-400/50 text-green-400 hover:bg-green-400/30 transition font-semibold">
+                    Store
+                </button>
+            </div>
         </div>
     </nav>
 
-    <section class="hero" id="home">
-        <h1>إدارة المتجر الذكية</h1>
-        <p>أضف، عدل، واحذف منتجاتك بكل سهولة</p>
-        <button class="btn btn-primary" id="addFirstProduct" style="display:none; margin-top: 1rem;" onclick="openModal('productModal')">أضف منتجك الأول</button>
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4 text-center">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6 neon-text">Premium Digital Products</h1>
+        <p class="text-xl text-gray-300 mb-8">Secure, instant delivery. Pay with Litecoin. Get access immediately.</p>
+        <button onclick="scrollToProducts()" class="px-8 py-4 bg-gradient-to-r from-cyan-400 to-green-400 text-slate-950 font-bold rounded-lg hover:shadow-lg neon-glow transition">
+            Shop Now
+        </button>
     </section>
 
-    <!-- لوحة تحكم المسؤول -->
-    <section class="admin-panel" id="adminPanel">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h2>لوحة تحكم المنتجات</h2>
-            <button class="btn btn-primary" onclick="openModal('productModal')">➕ إضافة منتج جديد</button>
+    <!-- Features -->
+    <section class="py-20 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="glassmorphism border border-cyan-400/20 rounded-xl p-6 hover:border-cyan-400/50 transition">
+                    <div class="text-cyan-400 text-3xl mb-4">⚡</div>
+                    <h3 class="text-xl font-bold text-white mb-2">Instant Delivery</h3>
+                    <p class="text-gray-400">Get your product immediately after payment</p>
+                </div>
+                <div class="glassmorphism border border-cyan-400/20 rounded-xl p-6 hover:border-cyan-400/50 transition">
+                    <div class="text-cyan-400 text-3xl mb-4">🔒</div>
+                    <h3 class="text-xl font-bold text-white mb-2">Secure Payments</h3>
+                    <p class="text-gray-400">Blockchain-verified Litecoin transactions</p>
+                </div>
+                <div class="glassmorphism border border-cyan-400/20 rounded-xl p-6 hover:border-cyan-400/50 transition">
+                    <div class="text-cyan-400 text-3xl mb-4">💬</div>
+                    <h3 class="text-xl font-bold text-white mb-2">24/7 Support</h3>
+                    <p class="text-gray-400">AI chatbot ready to help anytime</p>
+                </div>
+            </div>
         </div>
-        <div id="adminProductsList"></div>
     </section>
 
-    <section class="products">
-        <div class="products-grid" id="productsGrid"></div>
+    <!-- Products Section -->
+    <section id="products" class="py-20 px-4">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-center mb-12 neon-text">Available Products</h2>
+            <div id="productsContainer" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glassmorphism border border-cyan-400/20 rounded-xl p-12 text-center col-span-full">
+                    <p class="text-gray-400 text-lg">No products available yet. Check back soon!</p>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <!-- مودال إضافة/تعديل منتج -->
-    <div class="modal" id="productModal">
+    <!-- Admin Panel Modal -->
+    <div id="adminModal" class="modal">
         <div class="modal-content">
-            <h3 id="modalTitle">إضافة منتج جديد</h3>
-            <form id="productForm" onsubmit="handleProductSubmit(event)">
-                <input type="hidden" id="productId">
-                <div class="form-group"><label>اسم المنتج</label><input type="text" id="pName" required></div>
-                <div class="form-group"><label>السعر (LTC)</label><input type="number" step="0.0001" id="pPrice" required></div>
-                <div class="form-group"><label>الوصف</label><textarea id="pDesc" rows="3"></textarea></div>
-                <div class="form-group"><label>رابط الصورة</label><input type="text" id="pImage" placeholder="https://example.com/image.jpg"></div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">حفظ المنتج</button>
-            </form>
-            <button class="btn btn-secondary" onclick="closeModal('productModal')" style="width: 100%; margin-top: 0.5rem;">إلغاء</button>
+            <h2 class="text-2xl font-bold text-cyan-400 mb-6">Admin Access</h2>
+            <input type="password" id="adminPassword" placeholder="Enter Admin Password (20111)" />
+            <button onclick="adminLogin()" class="btn btn-primary w-full mb-2">Login</button>
+            <button onclick="closeAdminModal()" class="btn btn-secondary w-full">Cancel</button>
         </div>
     </div>
 
-    <!-- مودال المسؤول -->
-    <div class="modal" id="loginModal">
-        <div class="modal-content">
-            <h3>دخول المسؤول</h3>
-            <form onsubmit="handleAdminLogin(event)">
-                <div class="form-group"><label>البريد الإلكتروني</label><input type="email" value="alihussain7898.bh3@gmail.com" readonly></div>
-                <div class="form-group"><label>كود OTP</label><input type="text" id="adminOTP" placeholder="123456" required></div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">دخول</button>
-            </form>
-            <button class="btn btn-secondary" onclick="closeModal('loginModal')" style="width: 100%; margin-top: 0.5rem;">إلغاء</button>
+    <!-- Admin Dashboard Modal -->
+    <div id="dashboardModal" class="modal">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-cyan-400">Admin Dashboard</h2>
+                <button onclick="closeDashboard()" class="text-2xl text-gray-400 hover:text-white">&times;</button>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="glassmorphism border border-cyan-400/20 rounded-lg p-4 text-center">
+                    <p class="text-gray-400 mb-2">Total Products</p>
+                    <p class="text-2xl font-bold text-cyan-400" id="totalProducts">0</p>
+                </div>
+                <div class="glassmorphism border border-cyan-400/20 rounded-lg p-4 text-center">
+                    <p class="text-gray-400 mb-2">Total Revenue (LTC)</p>
+                    <p class="text-2xl font-bold text-green-400" id="totalRevenue">0.00</p>
+                </div>
+                <div class="glassmorphism border border-cyan-400/20 rounded-lg p-4 text-center">
+                    <p class="text-gray-400 mb-2">Total Sales</p>
+                    <p class="text-2xl font-bold text-purple-400" id="totalSales">0</p>
+                </div>
+            </div>
+
+            <!-- Add Product Form -->
+            <div class="mb-6">
+                <h3 class="text-xl font-bold text-cyan-400 mb-4">Add New Product</h3>
+                <input type="text" id="productName" placeholder="Product Name" />
+                <input type="number" id="productPrice" placeholder="Price (LTC)" step="0.001" />
+                <textarea id="productDesc" placeholder="Product Description" rows="3"></textarea>
+                <input type="url" id="productLink" placeholder="Download Link (URL)" />
+                <input type="url" id="productImage" placeholder="Image URL" />
+                <button onclick="addProduct()" class="btn btn-primary w-full">Add Product</button>
+            </div>
+
+            <!-- Products List -->
+            <div>
+                <h3 class="text-xl font-bold text-cyan-400 mb-4">Your Products</h3>
+                <div id="productsList"></div>
+            </div>
+
+            <button onclick="closeDashboard()" class="btn btn-secondary w-full mt-6">Close</button>
         </div>
     </div>
 
-    <div class="success-message" id="msg"></div>
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold text-cyan-400 mb-6">Complete Payment</h2>
+            <div id="paymentContent"></div>
+        </div>
+    </div>
+
+    <!-- Floating Buttons -->
+    <button class="floating-btn chatbot-btn" onclick="alert('AI Chatbot coming soon! 🤖')">💬</button>
+    <a href="https://wa.me/97336766444" target="_blank" class="floating-btn whatsapp-btn">💬</a>
 
     <script>
-        let products = JSON.parse(localStorage.getItem('products')) || [];
-        let isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-        let editingId = null;
+        const LTC_ADDRESS = 'ltc1qqyq2q0hd8cxdqmeq9kljmmrzj69u47uymmqhs6';
+        const WHATSAPP_NUMBER = '97336766444';
+        const ADMIN_PASSWORD = '20111';
 
-        function openModal(id) { 
-            if(id === 'productModal' && !editingId) {
-                document.getElementById('modalTitle').innerText = "إضافة منتج جديد";
-                document.getElementById('productForm').reset();
-                document.getElementById('productId').value = "";
+        // Initialize
+        function init() {
+            loadProducts();
+            renderProducts();
+        }
+
+        // Load products from localStorage
+        function loadProducts() {
+            const saved = localStorage.getItem('binance_products');
+            return saved ? JSON.parse(saved) : [];
+        }
+
+        // Save products to localStorage
+        function saveProducts(products) {
+            localStorage.setItem('binance_products', JSON.stringify(products));
+        }
+
+        // Render products
+        function renderProducts() {
+            const products = loadProducts();
+            const container = document.getElementById('productsContainer');
+
+            if (products.length === 0) {
+                container.innerHTML = '<div class="glassmorphism border border-cyan-400/20 rounded-xl p-12 text-center col-span-full"><p class="text-gray-400 text-lg">No products available yet. Check back soon!</p></div>';
+                return;
             }
-            document.getElementById(id).classList.add('active'); 
-        }
-        
-        function closeModal(id) { 
-            document.getElementById(id).classList.remove('active'); 
-            editingId = null;
-        }
 
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            if (document.getElementById('adminOTP').value === '123456') {
-                sessionStorage.setItem('isAdmin', 'true');
-                isAdmin = true;
-                closeModal('loginModal');
-                showMsg('تم دخول المسؤول بنجاح');
-                updateUI();
-            } else { showMsg('الكود غير صحيح!'); }
-        }
-
-        function handleLogout() {
-            sessionStorage.removeItem('isAdmin');
-            isAdmin = false;
-            updateUI();
-            showMsg('تم تسجيل الخروج');
+            container.innerHTML = products.map(p => `
+                <div class="product-card glassmorphism border border-cyan-400/20 rounded-xl overflow-hidden hover:border-cyan-400/50 transition" onclick="openPaymentModal('${p.id}')">
+                    ${p.image ? `<img src="${p.image}" alt="${p.name}" class="w-full h-40 object-cover" />` : '<div class="w-full h-40 bg-gradient-to-br from-cyan-400/20 to-purple-400/20"></div>'}
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-cyan-400 mb-2">${p.name}</h3>
+                        <p class="text-gray-400 text-sm mb-4 line-clamp-2">${p.description}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-green-400 font-bold text-lg">${p.price} LTC</span>
+                            <button class="px-4 py-2 bg-gradient-to-r from-cyan-400 to-green-400 text-slate-950 font-bold rounded-lg hover:shadow-lg neon-glow transition">
+                                🛒
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function toggleAdminPanel() {
-            const panel = document.getElementById('adminPanel');
-            panel.classList.toggle('active');
+        // Admin functions
+        function goToAdmin() {
+            document.getElementById('adminModal').classList.add('active');
         }
 
-        function handleProductSubmit(e) {
-            e.preventDefault();
-            const id = document.getElementById('productId').value || Date.now().toString();
-            const product = {
-                id,
-                name: document.getElementById('pName').value,
-                price: document.getElementById('pPrice').value,
-                description: document.getElementById('pDesc').value,
-                image: document.getElementById('pImage').value || 'https://via.placeholder.com/300'
-            };
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('active');
+        }
 
-            const index = products.findIndex(p => p.id === id);
-            if (index > -1) {
-                products[index] = product;
-                showMsg('تم تحديث المنتج بنجاح');
+        function adminLogin() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                closeAdminModal();
+                document.getElementById('adminPassword').value = '';
+                openDashboard();
             } else {
-                products.push(product);
-                showMsg('تم إضافة المنتج بنجاح');
+                alert('❌ Invalid password!');
             }
-
-            localStorage.setItem('products', JSON.stringify(products));
-            closeModal('productModal');
-            updateUI();
         }
 
-        function editProduct(id) {
-            const product = products.find(p => p.id === id);
-            if (product) {
-                editingId = id;
-                document.getElementById('modalTitle').innerText = "تعديل المنتج";
-                document.getElementById('productId').value = product.id;
-                document.getElementById('pName').value = product.name;
-                document.getElementById('pPrice').value = product.price;
-                document.getElementById('pDesc').value = product.description;
-                document.getElementById('pImage').value = product.image;
-                openModal('productModal');
+        function openDashboard() {
+            updateDashboard();
+            document.getElementById('dashboardModal').classList.add('active');
+        }
+
+        function closeDashboard() {
+            document.getElementById('dashboardModal').classList.remove('active');
+        }
+
+        function updateDashboard() {
+            const products = loadProducts();
+            document.getElementById('totalProducts').textContent = products.length;
+            document.getElementById('totalRevenue').textContent = products.reduce((sum, p) => sum + p.price, 0).toFixed(2);
+            
+            const productsList = document.getElementById('productsList');
+            if (products.length === 0) {
+                productsList.innerHTML = '<p class="text-gray-400">No products yet. Add your first product to get started!</p>';
+                return;
             }
+
+            productsList.innerHTML = products.map(p => `
+                <div class="glassmorphism border border-cyan-400/20 rounded-lg p-4 mb-4">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-cyan-400">${p.name}</h4>
+                            <p class="text-gray-400 text-sm">${p.description}</p>
+                            <p class="text-green-400 font-bold mt-2">${p.price} LTC</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editProduct('${p.id}')" class="btn btn-secondary">Edit</button>
+                            <button onclick="deleteProduct('${p.id}')" class="btn btn-danger">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addProduct() {
+            const name = document.getElementById('productName').value;
+            const price = parseFloat(document.getElementById('productPrice').value);
+            const desc = document.getElementById('productDesc').value;
+            const link = document.getElementById('productLink').value;
+            const image = document.getElementById('productImage').value;
+
+            if (!name || !price || !desc || !link) {
+                alert('❌ Please fill all fields!');
+                return;
+            }
+
+            const products = loadProducts();
+            products.push({
+                id: Date.now().toString(),
+                name, price, description: desc, downloadLink: link, image
+            });
+
+            saveProducts(products);
+            document.getElementById('productName').value = '';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productDesc').value = '';
+            document.getElementById('productLink').value = '';
+            document.getElementById('productImage').value = '';
+
+            updateDashboard();
+            renderProducts();
+            alert('✅ Product added successfully!');
         }
 
         function deleteProduct(id) {
-            if (confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                let products = loadProducts();
                 products = products.filter(p => p.id !== id);
-                localStorage.setItem('products', JSON.stringify(products));
-                showMsg('تم حذف المنتج');
-                updateUI();
+                saveProducts(products);
+                updateDashboard();
+                renderProducts();
+                alert('✅ Product deleted!');
             }
         }
 
-        function updateUI() {
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = "";
-            
-            products.forEach(p => {
-                grid.innerHTML += `
-                    <div class="product-card">
-                        <img src="${p.image}" class="product-image" onerror="this.src='https://via.placeholder.com/300'">
-                        <h3>${p.name}</h3>
-                        <p style="color: var(--primary); font-weight: bold; margin: 0.5rem 0;">${p.price} LTC</p>
-                        <p style="font-size: 0.8rem; color: var(--text-secondary);">${p.description}</p>
-                        ${isAdmin ? `
-                            <div class="admin-controls">
-                                <button class="btn btn-secondary" onclick="editProduct('${p.id}')" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">تعديل</button>
-                                <button class="btn btn-danger" onclick="deleteProduct('${p.id}')" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">حذف</button>
-                            </div>
-                        ` : ''}
+        function editProduct(id) {
+            alert('Edit feature coming soon!');
+        }
+
+        // Payment functions
+        function openPaymentModal(productId) {
+            const products = loadProducts();
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const content = `
+                <div class="mb-6">
+                    ${product.image ? `<img src="${product.image}" alt="${product.name}" class="w-full h-40 object-cover rounded-lg mb-4" />` : ''}
+                    <h3 class="text-xl font-bold text-cyan-400">${product.name}</h3>
+                    <p class="text-gray-400 text-sm mb-4">${product.description}</p>
+                    <p class="text-green-400 font-bold text-2xl">${product.price} LTC</p>
+                </div>
+
+                <input type="email" id="buyerEmail" placeholder="Your Email" />
+
+                <div class="mb-6">
+                    <p class="text-gray-400 mb-3">Send payment to:</p>
+                    <div class="flex gap-2">
+                        <input type="text" value="${LTC_ADDRESS}" readonly class="flex-1" />
+                        <button onclick="copyAddress()" class="btn btn-secondary">Copy</button>
                     </div>
-                `;
-            });
+                </div>
 
-            if (isAdmin) {
-                document.getElementById('adminLink').style.display = 'block';
-                document.getElementById('loginBtn').style.display = 'none';
-                document.getElementById('logoutBtn').style.display = 'block';
-                document.getElementById('addFirstProduct').style.display = products.length === 0 ? 'inline-block' : 'none';
-            } else {
-                document.getElementById('adminLink').style.display = 'none';
-                document.getElementById('loginBtn').style.display = 'block';
-                document.getElementById('logoutBtn').style.display = 'none';
-                document.getElementById('adminPanel').classList.remove('active');
-                document.getElementById('addFirstProduct').style.display = 'none';
+                <button onclick="sendViaWhatsApp('${product.name}', ${product.price})" class="btn btn-primary w-full mb-2">Send Proof via WhatsApp</button>
+                <button onclick="closePaymentModal()" class="btn btn-secondary w-full">Cancel</button>
+            `;
+
+            document.getElementById('paymentContent').innerHTML = content;
+            document.getElementById('paymentModal').classList.add('active');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+
+        function copyAddress() {
+            navigator.clipboard.writeText(LTC_ADDRESS);
+            alert('✅ Address copied!');
+        }
+
+        function sendViaWhatsApp(productName, price) {
+            const email = document.getElementById('buyerEmail').value;
+            if (!email) {
+                alert('❌ Please enter your email!');
+                return;
             }
+
+            const message = `I want to purchase: ${productName} for ${price} LTC. My email: ${email}`;
+            window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+            closePaymentModal();
         }
 
-        function showMsg(text) {
-            const m = document.getElementById('msg');
-            m.innerText = text;
-            m.style.display = 'block';
-            setTimeout(() => m.style.display = 'none', 3000);
+        function scrollToProducts() {
+            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
         }
 
-        updateUI();
+        // Start
+        init();
     </script>
 </body>
 </html>
